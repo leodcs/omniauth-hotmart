@@ -1,25 +1,24 @@
-#Heavily inspired by OmniAuth-Github spec
+# frozen_string_literal: true
+
+# Heavily inspired by OmniAuth-Github spec
 require 'spec_helper'
 
 describe OmniAuth::Strategies::Hotmart do
-  let(:access_token) { instance_double('AccessToken', :options => {}) }
+  let(:access_token) { instance_double('AccessToken', options: {}) }
   let(:user_info) { { id: 1, name: 'test', country: 'Brazil', email: 'test@test.com' } }
   let(:parsed_response) { { 'UserInfoResponse' => user_info } }
-  let(:response) { instance_double('Response', :parsed => parsed_response) }
+  let(:response) { instance_double('Response', parsed: parsed_response) }
 
   let(:enterprise_site)          { 'https://some.other.site.com/api/v3' }
   let(:enterprise_authorize_url) { 'https://some.other.site.com/login/oauth/authorize' }
   let(:enterprise_token_url)     { 'https://some.other.site.com/login/oauth/access_token' }
   let(:enterprise) do
     OmniAuth::Strategies::Hotmart.new('GITHUB_KEY', 'GITHUB_SECRET',
-        {
-            :client_options => {
-                :site => enterprise_site,
-                :authorize_url => enterprise_authorize_url,
-                :token_url => enterprise_token_url
-            }
-        }
-    )
+                                      client_options: {
+                                        site: enterprise_site,
+                                        authorize_url: enterprise_authorize_url,
+                                        token_url: enterprise_token_url
+                                      })
   end
 
   subject do
@@ -42,7 +41,6 @@ describe OmniAuth::Strategies::Hotmart do
     it 'should have correct token url' do
       expect(subject.options.client_options.token_url).to eq('/oauth/access_token')
     end
-
   end
 
   context '#raw_info' do
