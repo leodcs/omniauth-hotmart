@@ -7,12 +7,12 @@ require 'omniauth-hotmart/version'
 Gem::Specification.new do |spec|
   spec.name          = 'omniauth-hotmart'
   spec.version       = OmniAuth::Hotmart::VERSION
-  spec.authors       = ['Joao Paulo Motta Oliveira Silva']
-  spec.email         = ['jpaulo.motta@gmail.com']
+  spec.authors       = ['Leonardo de Carvalho Santos', 'Joao Paulo Motta Oliveira Silva']
+  spec.email         = ['aleotory@gmail.com', 'jpaulo.motta@gmail.com']
 
   spec.summary       = 'Hotmart authentication strategy for omniauth.'
   spec.description   = "Simply a omniauth provider for Hotmart. Connect your Ruby on Rails application to the Hotmart suite of web applications. It uses OmniAuth/OAuth to connect with Hotmart's hotconnect. "
-  spec.homepage      = 'https://github.com/jpaulomotta/omniauth-hotmart.git'
+  spec.homepage      = 'https://github.com/leodcs/omniauth-hotmart'
   spec.license       = 'MIT'
 
   # Specify which files should be added to the gem when it is released.

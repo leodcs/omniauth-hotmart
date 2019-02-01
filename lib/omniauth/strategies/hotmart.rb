@@ -1,54 +1,53 @@
 # frozen_string_literal: true
 
-require 'omniauth-oauth2'
-
 module OmniAuth
   module Strategies
     class Hotmart < OmniAuth::Strategies::OAuth2
-      # include OmniAuth::Strategy
-
-      # Give your strategy a name.
       option :name, 'hotmart'
 
-      # This is where you pass the options you would pass when
-      # initializing your consumer from the OAuth gem.
       option :client_options,
              site: 'https://api-sec-vlc.hotmart.com',
+             hot_connect_url: 'https://api-hot-connect.hotmart.com',
              authorize_url: '/security/oauth/authorize',
+             response_type: 'code',
              token_url: '/security/oauth/token',
+             grant_type: 'authorization_code'
 
-             # Faraday middleware (passed from OAuth2 gem to Faraday)
-             connection_build: proc { |con|
-               con.request :url_encoded # form-encode POST params
-               con.use OmniAuth::Hotmart::AccessTokenMiddleware
-               con.adapter Faraday.default_adapter # make requests with Net::HTTP
-             }
+      option :provider_ignores_state, true
 
-      # These are called after authentication has succeeded. If
-      # possible, you should try to set the UID without making
-      # additional calls (if the user id is returned with the token
-      # or as a URI parameter). This may not be possible with all
-      # providers.
       uid { raw_info['id'] }
 
       info do
-        {
-          name: raw_info['name'],
-          email: raw_info['email'],
-          country: raw_info['country']
-        }
+        { name: raw_info['name'],
+          email: raw_info['email'] }
       end
 
       extra do
-        {
-          'raw_info' => raw_info
-        }
+        { raw_info: raw_info }
+      end
+
+      private
+
+      def authorize_params
+       {}
+      end
+
+      def callback_url
+        full_host + script_name + callback_path
+      end
+
+      def build_access_token
+        options.token_params.merge!(headers: { 'Authorization' => basic_auth_header })
+        super
+      end
+
+      def basic_auth_header
+        'Basic ' + client.options[:basic]
       end
 
       def raw_info
-        access_token.options[:mode] = :body
-        access_token.options[:param_name] = :access_token
-        @raw_info ||= access_token.post('/user_info').parsed['UserInfoResponse']
+        @raw_info ||= access_token.get(options.client_options[:hot_connect_url],
+                                       '/user/rest/v2/me').parsed || {}
       end
     end
   end
