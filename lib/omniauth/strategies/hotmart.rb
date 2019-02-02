@@ -29,7 +29,7 @@ module OmniAuth
       private
 
       def authorize_params
-       {}
+        {}
       end
 
       def callback_url
@@ -46,8 +46,23 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= access_token.get(options.client_options[:hot_connect_url],
-                                       '/user/rest/v2/me').parsed || {}
+        return @raw_info if @raw_info
+
+        oauth = access_token.get(options.client_options[:hot_connect_url],
+                                 '/user/rest/v2/me').parsed
+
+        @raw_info = to_snake_keys(oauth) || {}
+      end
+
+      def to_snake_keys(value)
+        case value
+        when Array
+          value.map { |v| to_snake_keys(v) }
+        when Hash
+          Hash[value.map { |k, v| [k.to_s.underscore, to_snake_keys(v)] }]
+        else
+          value
+        end
       end
     end
   end
